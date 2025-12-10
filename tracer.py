@@ -86,10 +86,14 @@ list1.extend(list2)
 
 run_code(code)
 
+prev_state = {}
 for step, snap in enumerate(execution_log, start=1):
-    print(f"\nSTEP {step}: executing line {snap['lineno']}:")
-    for name, value in snap["after"].items():
-        print(f"   {name} = {value}")
+    current = snap["after"] or {}
+    changes = {k: v for k, v in current.items() if prev_state.get(k) != v}
+    print(f"\nSTEP {step}: line {snap['lineno']}")
+    if changes:
+        print(f"Changed: {changes}")
+    prev_state = current
 
 '''
 TRACING :
