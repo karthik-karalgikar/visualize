@@ -43,6 +43,13 @@ def tracer(frame, event, arg):
         return tracer
     
     if event == "line":
+        if last_line is not None and execution_log:
+            after = snap_locals()
+            for entry in reversed(execution_log):
+                if entry.get("lineno") == last_line and entry.get("after") is None:
+                    entry["after"] = {k: v for k, v in after.items()}
+                    break
+
         last_line = frame.f_lineno
         try:
             before = snap_locals()
@@ -72,6 +79,12 @@ def tracer(frame, event, arg):
         return tracer
     
     if event == "return":
+        if last_line is not None and execution_log:
+            after = snap_locals()
+            for entry in reversed(execution_log):
+                if entry.get("lineno") == last_line and entry.get("after") is None:
+                    entry["after"] = {k: v for k, v in after.items()}
+                    break
         ret = arg
         lineno = frame.f_lineno
         execution_log.append({
@@ -105,6 +118,21 @@ def run_code(code):
             exec(compiled, {"__name__" : "__main__"}, {})
         finally:
             sys.settrace(None)
+
+            if execution_log:
+                final_locals = {}
+                for entry in reversed(execution_log):
+                    if entry.get("after") and entry["event"] == "line":
+                        final_locals = entry["after"]
+                        break
+                    elif entry.get("before") and entry["event"] == "line":
+                        final_locals = entry["before"]
+                        break
+                
+                for entry in reversed(execution_log):
+                    if entry.get("event") == "line" and entry.get("after") is None:
+                        entry["after"] = final_locals
+                        break
 
         code_lines = code.split('\n')
         for step in execution_log:
