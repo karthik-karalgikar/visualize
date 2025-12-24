@@ -4,9 +4,10 @@ import numpy as np
 import torch
 import sympy as sp
 import traceback
+import __future__
 
 import tracer
-from ast_utils import find_candidate_expressions
+from ast_utils import find_candidate_expressions, get_future_flags
 from serializer import safe_json
 
 def run_code(code):
@@ -16,7 +17,8 @@ def run_code(code):
     formula_map = find_candidate_expressions(code)
 
     try:
-        compiled = compile(code, "<user_code>", "exec")
+        future_flags = get_future_flags(code)
+        compiled = compile(code, "<user_code>", "exec", flags=future_flags, dont_inherit=True)
         sandbox_globals = {
             "__name__": "__main__",
             "np": np,
@@ -34,6 +36,9 @@ def run_code(code):
 
             if tracer.execution_log:
                 final_locals = {}
+                for k, v in sandbox_globals.items():
+                    if not k.startswith("__") and not callable(v) and not isinstance(v, type(math)):
+                        final_locals[k] = v
                 for entry in reversed(tracer.execution_log):
                     if entry.get("after") and entry["event"] == "line":
                         final_locals = entry["after"]

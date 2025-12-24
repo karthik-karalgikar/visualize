@@ -2,6 +2,7 @@ import sys
 import copy
 import math
 
+
 # #shared state object
 # state = {
 #     "execution_log" : [],
@@ -30,6 +31,8 @@ def tracer(frame, event, arg):
             if callable(v): # -> to check if an object can be called (checking if v is callable, if it is, then continue)
                 continue
             if isinstance(v, type(math)): # -> checks whether an object or variable is an instance of a specified type or class. (checks whether v is of type math)
+                continue
+            if hasattr(v, '__module__') and v.__module__ == '__future__':
                 continue
             cleaned[k] = v
         return cleaned
