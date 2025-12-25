@@ -4,7 +4,36 @@ import numpy as np
 import torch
 import sympy as sp
 import traceback
+
+# Import all the modules you want to support
+import abc
+import array
+import bisect
+import calendar
+import cmath
+import collections
+import copy as copy_module
+import datetime
+import decimal
+import doctest
+import fractions
+import functools
 import __future__
+import hashlib
+import heapq
+import io
+import itertools
+import json
+import locale
+import operator
+import pickle
+import pprint
+import random
+import re
+import string
+import types
+import typing
+import unittest
 
 import tracer
 from ast_utils import find_candidate_expressions, get_future_flags
@@ -21,11 +50,40 @@ def run_code(code):
         compiled = compile(code, "<user_code>", "exec", flags=future_flags, dont_inherit=True)
         sandbox_globals = {
             "__name__": "__main__",
+            "__builtins__": __builtins__,
+            #Scientific computing
             "np": np,
             "torch": torch,
             "sp": sp,
             "math": math,
-            "__builtins__": __builtins__
+            #Standard library
+            "abc": abc,
+            "array": array,
+            "bisect": bisect,
+            "calendar": calendar,
+            "cmath": cmath,
+            "collections": collections,
+            "copy": copy_module,
+            "datetime": datetime,
+            "decimal": decimal,
+            "doctest": doctest,
+            "fractions": fractions,
+            "functools": functools,
+            "hashlib": hashlib,
+            "heapq": heapq,
+            "io": io,
+            "itertools": itertools,
+            "json": json,
+            "locale": locale,
+            "operator": operator,
+            "pickle": pickle,
+            "pprint": pprint,
+            "random": random,
+            "re": re,
+            "string": string,
+            "types": types,
+            "typing": typing,
+            "unittest": unittest,
         }
         
         sys.settrace(tracer.tracer)
@@ -37,7 +95,7 @@ def run_code(code):
             if tracer.execution_log:
                 final_locals = {}
                 for k, v in sandbox_globals.items():
-                    if not k.startswith("__") and not callable(v) and not isinstance(v, type(math)):
+                    if not k.startswith("__") and not isinstance(v, types.ModuleType):
                         final_locals[k] = v
                 for entry in reversed(tracer.execution_log):
                     if entry.get("after") and entry["event"] == "line":

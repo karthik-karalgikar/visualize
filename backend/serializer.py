@@ -3,6 +3,18 @@ import numpy as np
 import torch
 
 def safe_json(value, max_elements=30):
+    # Handle datetime objects
+    if hasattr(value, 'isoformat'):  # datetime, date, time
+        return str(value)
+    
+    # Handle Decimal
+    if value.__class__.__name__ == 'Decimal':
+        return str(value)
+    
+    # Handle Fraction
+    if value.__class__.__name__ == 'Fraction':
+        return str(value)
+    
     # Handle numpy arrays
     if isinstance(value, np.ndarray):
         size = value.size
