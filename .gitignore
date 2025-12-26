@@ -222,3 +222,13 @@ Monolithic_backend.py
 visualizer.html
 testingcodes.txt
 test.py
+# OS / Editor junk
+.DS_Store
+.vscode/
+
+# Node lock files
+package-lock.json
+frontend/package-lock.json
+
+# Generated frontend assets
+frontend/tailwind.css
