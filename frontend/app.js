@@ -2,6 +2,7 @@
 const { ArrayVisualization } = window.Components;
 const { MatrixVisualization } = window.Components;
 const { DictVisualization } = window.Components;
+const { NeuralNetworkVisualization } = window.Components;
 const { CodeEditor } = window.Components;
 const { VisualCanvas } = window.Components;
 const { Controls } = window.Components;
@@ -17,6 +18,7 @@ const PythonVisualizer = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState(null);
   const [autoPlay, setAutoPlay] = useState(false);
+  const [nnModels, setNnModels] = useState([]);
 
   const currentStepData = executionLog[currentStep];
   const locals = (currentStepData && (currentStepData.after || currentStepData.before)) || {};
@@ -46,6 +48,7 @@ const PythonVisualizer = () => {
     setError(null);
     setCurrentStep(0);
     setAutoPlay(false);
+    setNnModels([]);
     
     try {
       const response = await fetch('http://127.0.0.1:5000/execute', {
@@ -57,6 +60,7 @@ const PythonVisualizer = () => {
       const data = await response.json();
       if (data.success) {
         setExecutionLog(data.steps);
+        setNnModels(data.nn_models || []);
       } else {
         setError(data.error);
       }
@@ -92,6 +96,7 @@ const PythonVisualizer = () => {
             locals={locals}
             changedVars={changedVars}
             detectType={detectType}
+            nnModels={nnModels}
           />
         </div>
 

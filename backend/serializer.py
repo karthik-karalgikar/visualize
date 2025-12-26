@@ -3,6 +3,12 @@ import numpy as np
 import torch
 
 def safe_json(value, max_elements=30):
+    if hasattr(value, '__class__') and 'torch.nn' in str(type(value)):
+        return {
+            "type" : "nn_model",
+            "model_repr" : repr(value),
+            "model_str" : str(value)
+        }
     # Handle datetime objects
     if hasattr(value, 'isoformat'):  # datetime, date, time
         return str(value)
