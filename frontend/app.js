@@ -19,6 +19,7 @@ const PythonVisualizer = () => {
   const [error, setError] = useState(null);
   const [autoPlay, setAutoPlay] = useState(false);
   const [nnModels, setNnModels] = useState([]);
+  const [output, setOutput] = useState("");
 
   const currentStepData = executionLog[currentStep];
   const locals = (currentStepData && (currentStepData.after || currentStepData.before)) || {};
@@ -49,6 +50,7 @@ const PythonVisualizer = () => {
     setCurrentStep(0);
     setAutoPlay(false);
     setNnModels([]);
+    setOutput("");
     
     try {
       const response = await fetch('http://127.0.0.1:5000/execute', {
@@ -60,6 +62,7 @@ const PythonVisualizer = () => {
       const data = await response.json();
       if (data.success) {
         setExecutionLog(data.steps);
+        setOutput(data.output || "");
         setNnModels(data.nn_models || []);
       } else {
         setError(data.error);
@@ -97,6 +100,7 @@ const PythonVisualizer = () => {
             changedVars={changedVars}
             detectType={detectType}
             nnModels={nnModels}
+            output={output}
           />
         </div>
 

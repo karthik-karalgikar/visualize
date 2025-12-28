@@ -5,6 +5,7 @@ import torch
 import sympy as sp
 import traceback
 import types
+import io
 
 import tracer
 from ast_utils import find_candidate_expressions, get_future_flags
@@ -34,11 +35,19 @@ def run_code(code):
             **STDLIB_MODULES
         }
         
+        old_stdout = sys.stdout
+        captured_stdout = io.StringIO()
+        sys.stdout = captured_stdout
+
         sys.settrace(tracer.tracer)
         try:
             exec(compiled, sandbox_globals, sandbox_globals)
         finally:
             sys.settrace(None)
+
+            sys.stdout = old_stdout
+
+            output_text = captured_stdout.getvalue()
 
             if tracer.execution_log:
                 final_locals = {}
@@ -58,13 +67,13 @@ def run_code(code):
                         entry["after"] = final_locals
                         break
 
-        lines = code.rstrip().split("\n")
-        last = lines[-1]
+        # lines = code.rstrip().split("\n")
+        # last = lines[-1]
 
-        if last and not last.startswith(("return", "print")):
-            lines[-1] = f"__expr_result__ = {last}"
+        # if last and not last.startswith(("return", "print")):
+        #     lines[-1] = f"__expr_result__ = {last}"
 
-        code = "\n".join(lines)
+        # code = "\n".join(lines)
 
         # Add code lines
         code_lines = code.split('\n')
@@ -108,7 +117,8 @@ def run_code(code):
         return {
             "success": True, 
             "steps": safe_steps, 
-            "nn_models" : nn_models
+            "nn_models" : nn_models,
+            "output" : output_text
         }
 
     except Exception as e:
