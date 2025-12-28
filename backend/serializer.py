@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import torch
+import io
 
 def safe_json(value, max_elements=30):
     if hasattr(value, '__class__') and 'torch.nn' in str(type(value)):
