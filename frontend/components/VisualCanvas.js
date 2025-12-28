@@ -1,6 +1,6 @@
 window.Components = window.Components || {};
 
-window.Components.VisualCanvas = ({ executionLog, currentStepData, locals, changedVars, detectType, nnModels, output }) => {
+window.Components.VisualCanvas = ({ executionLog, currentStepData, locals, changedVars, detectType, nnModels }) => {
   const { ArrayVisualization, MatrixVisualization, DictVisualization, NeuralNetworkVisualization } = window.Components;
   const { renderFormula } = window.Utils;
 
@@ -94,18 +94,17 @@ window.Components.VisualCanvas = ({ executionLog, currentStepData, locals, chang
       ) : (
         <div className="space-y-4 max-h-[500px] overflow-y-auto p-4 bg-slate-900/50 rounded-lg">
           {/* Console Output Section */}
-            {output && (
+            {currentStepData?.stdout?.length > 0 && (
               <div className="bg-slate-950 border-2 border-green-500 rounded-xl p-4 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="text-xs text-green-400 font-semibold">
-                    Console Output
-                  </div>
+                <div className="text-xs text-green-400 font-semibold mb-2">
+                  Console Output
                 </div>
                 <pre className="text-sm font-mono text-green-300 whitespace-pre-wrap">
-                  {output}
+                  {currentStepData.stdout.join("\n")}
                 </pre>
               </div>
-          )}
+            )}
+
           {currentStepData?.formula && (
             <div className="bg-indigo-900/30 border-2 border-indigo-500 rounded-xl p-4 mb-4">
               <div className="text-xs text-indigo-400 mb-2 font-semibold">📐 Formula at Line {currentStepData.lineno}</div>

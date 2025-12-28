@@ -12,6 +12,7 @@ import types
 
 execution_log = []
 last_line = None
+current_lineno = None
 
 def tracer(frame, event, arg):
     global last_line 
@@ -61,6 +62,7 @@ def tracer(frame, event, arg):
         return tracer
     
     if event == "line":
+        global current_lineno
         # providing "after" state for the PREVIOUS line
         if last_line is not None and execution_log:
             after = snap_locals()
@@ -71,6 +73,8 @@ def tracer(frame, event, arg):
 
         # log the CURRENT line (with "before" state)
         last_line = frame.f_lineno
+        current_lineno = last_line
+        
         before = snap_locals()
         execution_log.append({
             "event": "line",
