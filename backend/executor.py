@@ -17,16 +17,22 @@ printed_output = []
 def traced_print(*args, **kwargs):
     text = " ".join(str(a) for a in args)
 
-    printed_output.append({
-        "lineno" : tracer.current_lineno,
-        "text" : text
-    })
+    lineno = tracer.current_lineno
+
+    if lineno is not None:
+        # Store with execution index (how many line events we've seen)
+        printed_output.append({
+            "lineno": lineno,
+            "text": text,
+            "step_index": len(tracer.execution_log) - 1  # Current step
+        })
 
     sys.__stdout__.write(text + "\n")
 
 def run_code(code):
     tracer.execution_log.clear()
     tracer.last_line = None
+    tracer.current_lineno = None
     printed_output.clear()
 
     formula_map = find_candidate_expressions(code)
@@ -83,15 +89,24 @@ def run_code(code):
 
         # code = "\n".join(lines)
 
-        # Add code lines
+        # Add code lines and match prints to specific step indices
         code_lines = code.split('\n')
-        for step in tracer.execution_log:
+        for idx, step in enumerate(tracer.execution_log):
+            ln = step.get("lineno")
+            if isinstance(ln, int) and 1 <= ln <= len(code_lines):
+                step['code'] = code_lines[ln - 1]
+            else:
+                step['code'] = None
+            
+            # Add stdout for THIS specific execution of this line
             if step.get("event") == "line":
                 step["stdout"] = [
-                    o["text"]
-                    for o in printed_output
-                    if o["lineno"] == step["lineno"]
+                    p["text"] 
+                    for p in printed_output 
+                    if p["step_index"] == idx
                 ]
+            else:
+                step["stdout"] = []
         '''
         {
             "event": "line",
