@@ -3,19 +3,18 @@ import copy
 import math
 import types
 
-
-# #shared state object
-# state = {
-#     "execution_log" : [],
-#     "last_line" : None
-# }
-
 execution_log = []
 last_line = None
 current_lineno = None
+call_stack = [] # track function calls
+call_tree = [] # store recursive call tree
+call_counter = 0 # unique id for each call
 
 def tracer(frame, event, arg):
-    global last_line 
+    global last_line
+    global call_counter 
+    current_call_id = call_stack[-1]["call_id"] if call_stack else None
+
 
     if frame.f_globals.get("__name__") != "__main__":
         return tracer
@@ -51,13 +50,32 @@ def tracer(frame, event, arg):
     if event == "call":
         func_name = frame.f_code.co_name
         lineno = frame.f_lineno
+
+        call_id = call_counter
+        call_counter = call_counter + 1
+
+        parent_id = call_stack[-1]["call_id"] if call_stack else None
+
+        call_info = {
+            "call_id" : call_id,
+            "func" : func_name,
+            "lineno" : lineno,
+            "args" : snap_locals(),
+            "parent_id" : parent_id,
+            "return_value" : None
+        }
+
+        call_stack.append(call_info)
+        call_tree.append(call_info)
+
         execution_log.append({
             "event": "call",
             "func": func_name,
             "lineno": lineno,
             "before": snap_locals(),
             "after": None, 
-            "code": None
+            "code": None,
+            "call_id" : call_id
         })
         return tracer
     
@@ -82,7 +100,8 @@ def tracer(frame, event, arg):
             "lineno": last_line,
             "after": None, 
             "code": None,
-            "func": frame.f_code.co_name
+            "func": frame.f_code.co_name, 
+            "call_id" : current_call_id
         })
         return tracer
 
@@ -105,6 +124,11 @@ def tracer(frame, event, arg):
         
         ret = arg
         lineno = frame.f_lineno
+
+        if call_stack:
+            call_info = call_stack.pop()
+            call_info["return_value"] = ret
+
         execution_log.append({
             "event": "return",
             "lineno": lineno,
@@ -112,7 +136,8 @@ def tracer(frame, event, arg):
             "return_value": ret, 
             "before": None,
             "after": None,
-            "code": None
+            "code": None, 
+            "call_id" : current_call_id
         })
         return tracer
     

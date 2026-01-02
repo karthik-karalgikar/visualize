@@ -10,6 +10,7 @@ import tracer
 from ast_utils import find_candidate_expressions, get_future_flags
 from serializer import safe_json
 from nn_extractor import extract_sequential_models, extract_manual_dense_layers, extract_weight_stack_dense
+from recursion_detector import extract_recursive_function
 from imports import STDLIB_MODULES
 
 printed_output = []
@@ -33,6 +34,9 @@ def run_code(code):
     tracer.execution_log.clear()
     tracer.last_line = None
     tracer.current_lineno = None
+    tracer.call_stack.clear()
+    tracer.call_counter = 0
+    tracer.call_tree.clear()
     printed_output.clear()
 
 
@@ -55,6 +59,8 @@ def run_code(code):
             manual = extract_manual_dense_layers(code)
             if manual:
                 nn_models = manual
+
+    recursive_funcs = extract_recursive_function(code)
 
     safe_builtins = dict(__builtins__)
     safe_builtins["print"] = traced_print
@@ -196,7 +202,9 @@ def run_code(code):
         return {
             "success": True, 
             "steps": safe_steps, 
-            "nn_models" : nn_models
+            "nn_models" : nn_models,
+            "call_tree" : tracer.call_tree,
+            "recursive_funcs" : recursive_funcs
         }
 
     except Exception as e:
