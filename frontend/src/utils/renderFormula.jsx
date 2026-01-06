@@ -19,7 +19,7 @@ export function renderFormula(formulaObj) {
           dangerouslySetInnerHTML={{ __html: html }}
         />
       );
-    } catch (e) {
+    } catch {
       return <pre className="text-xs text-white">{latex || expr}</pre>;
     }
   }

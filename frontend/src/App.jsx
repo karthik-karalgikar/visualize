@@ -26,10 +26,13 @@ export default function App() {
 
   const currentStepData = executionLog[currentStep] || null;
 
-const locals =
-  currentStepData?.after ||
-  currentStepData?.before ||
-  {};
+const locals = useMemo(() => {
+  return (
+    currentStepData?.after ||
+    currentStepData?.before ||
+    {}
+  );
+}, [currentStepData]);
 
 
   const changedVars = useMemo(() => {

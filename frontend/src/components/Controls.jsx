@@ -1,5 +1,4 @@
 import { SkipBack, SkipForward } from "./icons";
-import { renderFormula } from "../utils/renderFormula";
 
 export default function Controls({
   currentStep,

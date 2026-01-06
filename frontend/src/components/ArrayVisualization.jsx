@@ -1,4 +1,4 @@
-export default function ArrayVisualization({ arr, name }) {
+export default function ArrayVisualization({ arr }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2 flex-wrap">
