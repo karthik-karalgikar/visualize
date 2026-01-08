@@ -4,11 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "prebuild": "chmod +x node_modules/.bin/vite || true",
     "dev": "vite",
-    "preview": "vite preview",
-    "lint": "eslint ."
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
     "katex": "^0.16.27",
