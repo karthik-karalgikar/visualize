@@ -5,10 +5,6 @@ import Controls from "./components/Controls";
 import VisualCanvas from "./components/VisualCanvas";
 
 export default function App() {
-  /* -------------------------------
-     Core State
-  -------------------------------- */
-
   const [code, setCode] = useState(
     `import numpy as np\n\nlist1 = [1, 2, 3]\nx = np.array([[1.0, 2.0], [3.0, 4.0]])\npass`
   );
@@ -21,10 +17,6 @@ export default function App() {
   const [nnModels, setNnModels] = useState([]);
   const [callTree, setCallTree] = useState([]);
   const [recursiveFuncs, setRecursiveFuncs] = useState([]);
-
-  /* -------------------------------
-     Derived State
-  -------------------------------- */
 
   const currentStepData = executionLog[currentStep] || null;
 
@@ -55,31 +47,7 @@ export default function App() {
     return changed;
   }, [currentStep, executionLog, locals]);
 
-  // const nnModels = useMemo(() => {
-  //   return executionLog
-  //     .flatMap((step) => step.nn_models || [])
-  //     .filter(Boolean);
-  // }, [executionLog]);
-
-  // const callTree = useMemo(() => {
-  //   return executionLog.filter(
-  //     (step) => step.event === "call" || step.event === "return"
-  //   );
-  // }, [executionLog]);
-
-  // const recursiveFuncs = useMemo(() => {
-  //   const counts = {};
-  //   callTree.forEach((node) => {
-  //     counts[node.func] = (counts[node.func] || 0) + 1;
-  //   });
-  //   return Object.keys(counts).filter((k) => counts[k] > 1);
-  // }, [callTree]);
-
   const codeLines = useMemo(() => code.split("\n"), [code]);
-
-  /* -------------------------------
-     Auto Play
-  -------------------------------- */
 
   useEffect(() => {
     if (!autoPlay) return;
@@ -93,10 +61,6 @@ export default function App() {
       setAutoPlay(false);
     }
   }, [autoPlay, currentStep, executionLog.length]);
-
-  /* -------------------------------
-     Run Code
-  -------------------------------- */
 
   const runCode = async () => {
     setIsRunning(true);
@@ -132,10 +96,6 @@ export default function App() {
       setIsRunning(false);
     }
   };
-
-  /* -------------------------------
-     Render
-  -------------------------------- */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
