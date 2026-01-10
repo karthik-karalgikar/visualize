@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Box, Flex, Text, Divider, Image, Center } from "@mantine/core";
 import CodeEditor from "./components/CodeEditor";
 import Controls from "./components/Controls";
 import VisualCanvas from "./components/VisualCanvas";
@@ -98,45 +97,29 @@ export default function App() {
   };
 
   return (
-    <Box h="100vh" w="100vw" bg="dark.9">
-      <Flex direction="column" h="100%" w="100%" maw={1800} mx="auto">
+    <div className="h-screen w-screen bg-neutral-900">
+      <div className="flex h-full w-full max-w-[1800px] mx-auto flex-col">
         {/* HEADER */}
-        <Flex
-          h={56}
-          px="md"
-          align="center"
-          justify="space-between"
-          style={{ borderBottom: "1px solid #262626" }}
-        >
-          <Flex align="center" gap="sm">
-            <Image
+        <div className="flex h-14 items-center justify-between border-b border-neutral-800 px-4">
+          <div className="flex items-center gap-3">
+            <img
               src="/dhristilogo.png"
               alt="Dhristi logo"
-              w={84}
-              h={84}
-              fit="contain"
+              className="h-[84px] w-[84px] object-contain"
             />
 
-            <Center h={84}>
-              <Text size="md" fw={600} c="gray.0">
+            <div className="flex h-[84px] items-center">
+              <span className="text-base font-semibold text-gray-100">
                 Visualise Code
-              </Text>
-            </Center>
-          </Flex>
-        </Flex>
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* MAIN CONTENT */}
-        <Flex flex={1} gap="sm" p="sm" style={{ minHeight: 0 }}>
+        <div className="flex flex-1 gap-2 p-2 min-h-0">
           {/* CODE EDITOR */}
-          <Box
-            flex={7}
-            bg="dark.8"
-            style={{
-              border: "1px solid #262626",
-              borderRadius: 8,
-              overflow: "hidden",
-            }}
-          >
+          <div className="flex-[7] rounded-lg border border-neutral-800 bg-neutral-800 overflow-hidden">
             <CodeEditor
               code={code}
               setCode={setCode}
@@ -147,18 +130,10 @@ export default function App() {
               currentStep={currentStep}
               currentStepData={currentStepData}
             />
-          </Box>
+          </div>
 
           {/* VISUAL CANVAS */}
-          <Box
-            flex={5}
-            bg="dark.8"
-            style={{
-              border: "1px solid #262626",
-              borderRadius: 8,
-              overflow: "hidden",
-            }}
-          >
+          <div className="flex-[5] rounded-lg border border-neutral-800 bg-neutral-800 overflow-hidden">
             <VisualCanvas
               executionLog={executionLog}
               currentStep={currentStep}
@@ -169,14 +144,13 @@ export default function App() {
               callTree={callTree}
               recursiveFuncs={recursiveFuncs}
             />
-          </Box>
-        </Flex>
+          </div>
+        </div>
 
         {/* CONTROLS / TIMELINE */}
-
         <>
-          <Divider color="dark.7" />
-          <Box h={64} px="md">
+          <div className="h-px bg-neutral-700" />
+          <div className="h-16 px-4">
             <Controls
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
@@ -187,9 +161,9 @@ export default function App() {
               currentStepData={currentStepData}
               codeLines={codeLines}
             />
-          </Box>
+          </div>
         </>
-      </Flex>
-    </Box>
+      </div>
+    </div>
   );
 }

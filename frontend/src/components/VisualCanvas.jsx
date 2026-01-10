@@ -1,12 +1,6 @@
-import {
-  Box,
-  Text,
-  ScrollArea,
-  Paper,
-  Stack,
-  Group,
-  Badge,
-} from "@mantine/core";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 import ArrayVisualization from "./ArrayVisualization";
 import MatrixVisualization from "./MatrixVisualization";
@@ -43,69 +37,67 @@ export default function VisualCanvas({
           : value.values;
 
         return (
-          <Group gap="xs">
-            <Text ff="monospace" c="orange.4" fw={700} fz="xl">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-orange-400 text-xl font-bold">
               {scalarValue}
-            </Text>
-            <Text size="xs" c="gray.6">
-              torch.{value.dtype}
-            </Text>
-          </Group>
+            </span>
+            <span className="text-xs text-gray-500">torch.{value.dtype}</span>
+          </div>
         );
       }
 
       case "tensor_1d":
         return (
-          <Stack gap="xs">
-            <Text size="xs" c="gray.5">
+          <div className="flex flex-col gap-2">
+            <div className="text-xs text-gray-500">
               torch tensor: shape {value.shape.join("x")} | {value.dtype}
-            </Text>
+            </div>
             <ArrayVisualization arr={value.values} name={name} />
-          </Stack>
+          </div>
         );
 
       case "tensor_2d":
         return (
-          <Stack gap="xs">
-            <Text size="xs" c="gray.5">
+          <div className="flex flex-col gap-2">
+            <div className="text-xs text-gray-500">
               torch tensor: shape {value.shape.join("x")} | {value.dtype}
-            </Text>
+            </div>
             <MatrixVisualization
               matrix={{ type: "ndarray", values: value.values }}
               name={name}
             />
-          </Stack>
+          </div>
         );
 
       case "tensor_nd":
         return (
-          <Stack gap="xs">
-            <Text size="xs" c="yellow.4">
+          <div className="flex flex-col gap-2">
+            <div className="text-xs text-yellow-400">
               torch tensor: shape {value.shape.join("x")} | {value.dtype}
-            </Text>
-            <Paper p="sm" bg="dark.6">
+            </div>
+            <div className="rounded-md bg-neutral-700 p-3">
               {value.summary ? (
                 <>
-                  <Text size="sm" c="gray.3">
+                  <div className="text-sm text-gray-300">
                     Size: {value.summary.size}
-                  </Text>
-                  <Text size="sm" c="gray.3">
+                  </div>
+                  <div className="text-sm text-gray-300">
                     Min: {value.summary.min?.toFixed(4)}
-                  </Text>
-                  <Text size="sm" c="gray.3">
+                  </div>
+                  <div className="text-sm text-gray-300">
                     Max: {value.summary.max?.toFixed(4)}
-                  </Text>
-                  <Text size="sm" c="gray.3">
+                  </div>
+                  <div className="text-sm text-gray-300">
                     Mean: {value.summary.mean?.toFixed(4)}
-                  </Text>
+                  </div>
                 </>
               ) : (
-                <Text size="sm" c="gray.4">
+                <div className="text-sm text-gray-400">
                   High-dimensional tensor
-                </Text>
+                </div>
               )}
-            </Paper>
-          </Stack>
+            </div>
+          </div>
         );
 
       case "matrix":
@@ -116,64 +108,53 @@ export default function VisualCanvas({
 
       case "string":
         return (
-          <Text ff="monospace" c="green.4" fz="lg">
-            "{value}"
-          </Text>
+          <div className="font-mono text-green-400 text-lg">"{value}"</div>
         );
 
       case "number":
         return (
-          <Text ff="monospace" c="orange.4" fw={700} fz="xl">
+          <div className="font-mono text-orange-400 text-xl font-bold">
             {value}
-          </Text>
+          </div>
         );
 
       default:
         return (
-          <Text ff="monospace" c="gray.5">
-            {JSON.stringify(value)}
-          </Text>
+          <div className="font-mono text-gray-500">{JSON.stringify(value)}</div>
         );
     }
   };
 
   return (
-    <Paper p="md" radius="md" bg="dark.8" withBorder h="100%">
-      <Text fw={600} c="gray.0" mb="sm">
-        Visual Canvas
-      </Text>
+    <Card className="h-full bg-neutral-800 border border-neutral-700 p-4">
+      <div className="mb-3 font-semibold text-gray-100">Visual Canvas</div>
 
       {executionLog.length === 0 ? (
-        <Stack align="center" justify="center" h={400}>
-          <Text fz={48} opacity={0.5}>
-            🎨
-          </Text>
-          <Text c="gray.5" fz="lg">
+        <div className="flex flex-col items-center justify-center h-[400px] gap-2">
+          <div className="text-5xl opacity-50">🎨</div>
+          <div className="text-lg text-gray-500">
             Run your code to see visualizations
-          </Text>
-        </Stack>
+          </div>
+        </div>
       ) : (
-        <ScrollArea h={500}>
-          <Stack gap="md" p="sm">
+        <ScrollArea className="h-[500px]">
+          <div className="flex flex-col gap-4 p-2">
             {/* Neural Networks */}
             {nnModels && nnModels.length > 0 && (
-              <Stack gap="md">
-                <Text fw={700} size="sm" c="cyan.4">
+              <div className="flex flex-col gap-4">
+                <div className="text-sm font-bold text-cyan-400">
                   Detected Neural Networks
-                </Text>
+                </div>
 
                 {nnModels.map((model, idx) => (
-                  <Paper
+                  <Card
                     key={idx}
-                    p="md"
-                    radius="xl"
-                    withBorder
-                    style={{ borderColor: "#22d3ee" }}
+                    className="rounded-xl border border-cyan-400 p-4"
                   >
                     <NeuralNetworkVisualization model={model} />
-                  </Paper>
+                  </Card>
                 ))}
-              </Stack>
+              </div>
             )}
 
             {/* Recursion Tree */}
@@ -190,52 +171,34 @@ export default function VisualCanvas({
 
             {/* Console Output */}
             {currentStepData?.stdout?.length > 0 && (
-              <Paper
-                p="md"
-                radius="xl"
-                bg="dark.9"
-                withBorder
-                style={{ borderColor: "#22c55e" }}
-              >
-                <Text size="xs" fw={700} c="green.4" mb="xs">
+              <Card className="rounded-xl border border-green-500 bg-neutral-900 p-4">
+                <div className="mb-1 text-xs font-bold text-green-400">
                   Console Output
-                </Text>
-                <Text
-                  ff="monospace"
-                  size="sm"
-                  c="green.3"
-                  style={{ whiteSpace: "pre-wrap" }}
-                >
+                </div>
+                <div className="font-mono text-sm text-green-300 whitespace-pre-wrap">
                   {currentStepData.stdout.join("\n")}
-                </Text>
-              </Paper>
+                </div>
+              </Card>
             )}
 
             {/* Formula */}
             {currentStepData?.formula && (
-              <Paper
-                p="md"
-                radius="xl"
-                withBorder
-                style={{ borderColor: "#6366f1" }}
-              >
-                <Text size="xs" fw={700} c="indigo.4" mb="xs">
+              <Card className="rounded-xl border border-indigo-500 p-4">
+                <div className="mb-1 text-xs font-bold text-indigo-400">
                   📐 Formula at Line {currentStepData.lineno}
-                </Text>
-                <Paper p="md" bg="dark.9" radius="md">
+                </div>
+                <div className="rounded-md bg-neutral-900 p-4">
                   {renderFormula(currentStepData.formula)}
-                </Paper>
-              </Paper>
+                </div>
+              </Card>
             )}
 
             {/* Local Variables */}
             {Object.keys(locals).length > 0 ? (
               Object.entries(locals).map(([name, value]) => (
-                <Paper
+                <Card
                   key={name}
-                  p="md"
-                  radius="xl"
-                  withBorder
+                  className="rounded-xl border p-4"
                   style={{
                     borderColor: changedVars.has(name) ? "#eab308" : "#475569",
                     backgroundColor: changedVars.has(name)
@@ -243,33 +206,31 @@ export default function VisualCanvas({
                       : "rgba(30,41,59,0.8)",
                   }}
                 >
-                  <Group gap="sm" mb="md">
-                    <Text ff="monospace" fw={700} fz="lg" c="blue.4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="font-mono font-bold text-lg text-blue-400">
                       {name}
-                    </Text>
+                    </span>
 
-                    <Badge color="dark" variant="filled">
-                      {detectType(value)}
-                    </Badge>
+                    <Badge variant="secondary">{detectType(value)}</Badge>
 
                     {changedVars.has(name) && (
-                      <Badge color="yellow" variant="filled">
+                      <Badge className="bg-yellow-500 text-black">
                         CHANGED
                       </Badge>
                     )}
-                  </Group>
+                  </div>
 
                   {renderValue(value, name)}
-                </Paper>
+                </Card>
               ))
             ) : (
-              <Text c="gray.5" ta="center" py="xl">
+              <div className="py-8 text-center text-gray-500">
                 No variables defined yet
-              </Text>
+              </div>
             )}
-          </Stack>
+          </div>
         </ScrollArea>
       )}
-    </Paper>
+    </Card>
   );
 }

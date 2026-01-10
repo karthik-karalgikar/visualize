@@ -1,4 +1,4 @@
-import { Flex, Text, Button } from "@mantine/core";
+import { Button } from "@/components/ui/button";
 import { SkipBack, SkipForward } from "./icons";
 
 export default function Controls({
@@ -12,12 +12,12 @@ export default function Controls({
   currentStepData,
 }) {
   return (
-    <Flex align="center" justify="space-between" w="100%">
+    <div className="flex items-center justify-between w-full">
       {/* LEFT */}
-      <Flex gap="sm">
+      <div className="flex gap-2">
         <Button
-          size="xs"
-          variant="default"
+          size="sm"
+          variant="secondary"
           disabled={currentStep === 0}
           onClick={() => {
             setExecutionLog([]);
@@ -30,32 +30,32 @@ export default function Controls({
         </Button>
 
         <Button
-          size="xs"
-          color={autoPlay ? "red" : "gray"}
+          size="sm"
+          variant={autoPlay ? "destructive" : "secondary"}
           onClick={() => setAutoPlay(!autoPlay)}
         >
           {autoPlay ? "Pause" : "Auto Play"}
         </Button>
-      </Flex>
+      </div>
 
       {/* CENTER */}
-      <Flex align="center" gap="md">
+      <div className="flex items-center gap-4">
         <Button
-          variant="default"
-          size="xs"
+          size="sm"
+          variant="secondary"
           disabled={currentStep === 0}
           onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
         >
           <SkipBack />
         </Button>
 
-        <Text fw={600} c="gray.0">
+        <span className="font-semibold text-gray-100">
           {currentStep + 1} / {executionLog.length}
-        </Text>
+        </span>
 
         <Button
-          variant="default"
-          size="xs"
+          size="sm"
+          variant="secondary"
           disabled={currentStep === executionLog.length - 1}
           onClick={() =>
             setCurrentStep(Math.min(executionLog.length - 1, currentStep + 1))
@@ -63,17 +63,17 @@ export default function Controls({
         >
           <SkipForward />
         </Button>
-      </Flex>
+      </div>
 
       {/* RIGHT */}
-      <Text size="xs" c="gray.5">
+      <div className="text-xs text-gray-500">
         {currentStepData?.event === "call" && `CALL ${currentStepData.func}()`}
 
         {currentStepData?.event === "return" &&
           `RETURN ${currentStepData.func}()`}
 
         {currentStepData?.event === "line" && `Line ${currentStepData.lineno}`}
-      </Text>
-    </Flex>
+      </div>
+    </div>
   );
 }

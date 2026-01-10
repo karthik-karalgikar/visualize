@@ -1,6 +1,8 @@
-import { Box, Text, ScrollArea } from "@mantine/core";
-import { Play, AlertCircle } from "./icons";
 import { useEffect, useRef } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Play } from "./icons";
 
 export default function CodeEditor({
   code,
@@ -28,28 +30,17 @@ export default function CodeEditor({
   }, [currentStepData]);
 
   return (
-    <Box h="100%" p="md" bg="dark.8" borderRadius="md">
+    <div className="h-full rounded-md bg-neutral-800 p-4">
       {/* HEADER */}
-      <Box mb="sm">
-        <Text fw={600} c="gray.0">
-          Code Editor
-        </Text>
-        <Text size="xs" c="gray.5">
-          Python 3 • Execution-aware
-        </Text>
-      </Box>
+      <div className="mb-2">
+        <div className="font-semibold text-gray-100">Code Editor</div>
+        <div className="text-xs text-gray-500">Python 3 • Execution-aware</div>
+      </div>
 
       {/* CODE VIEW */}
-      <Box
-        h="calc(100% - 96px)"
-        bg="dark.9"
-        style={{
-          border: "1px solid #262626",
-          borderRadius: 8,
-        }}
-      >
+      <div className="h-[calc(100%-96px)] rounded-lg border border-neutral-800 bg-neutral-900">
         {isExecutionMode ? (
-          <ScrollArea h="100%" px="sm">
+          <ScrollArea className="h-full px-2">
             {codeLines.map((line, idx) => {
               const lineNo = idx + 1;
 
@@ -63,11 +54,10 @@ export default function CodeEditor({
               );
 
               return (
-                <Box
+                <div
                   key={idx}
                   ref={(el) => (lineRefs.current[lineNo] = el)}
-                  px="xs"
-                  py={2}
+                  className="px-2 py-[2px] rounded text-[13px] font-mono"
                   style={{
                     backgroundColor: isCurrent
                       ? "#facc15"
@@ -79,25 +69,13 @@ export default function CodeEditor({
                       : isExecuted
                       ? "#86efac"
                       : "#6b7280",
-                    fontFamily: "monospace",
-                    fontSize: 13,
-                    borderRadius: 4,
                   }}
                 >
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 32,
-                      textAlign: "right",
-                      marginRight: 12,
-                      color: "#525252",
-                      userSelect: "none",
-                    }}
-                  >
+                  <span className="inline-block w-8 text-right mr-3 select-none text-neutral-500">
                     {lineNo}
                   </span>
                   {line || " "}
-                </Box>
+                </div>
               );
             })}
           </ScrollArea>
@@ -106,55 +84,36 @@ export default function CodeEditor({
             value={code}
             onChange={(e) => setCode(e.target.value)}
             spellCheck={false}
-            style={{
-              width: "100%",
-              height: "100%",
-              resize: "none",
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              padding: 12,
-              fontFamily: "monospace",
-              fontSize: 13,
-              color: "#4ade80",
-            }}
+            className="h-full w-full resize-none bg-transparent border-none outline-none p-3 font-mono text-[13px] text-green-400"
             placeholder="Enter your Python code here..."
           />
         )}
-      </Box>
+      </div>
 
       {/* RUN BUTTON */}
-
-      <Box mt="sm">
-        <button
+      <div className="mt-2">
+        <Button
           onClick={runCode}
           disabled={isRunning}
-          className="w-full bg-neutral-800 hover:bg-neutral-700 text-white py-2 rounded-md flex items-center justify-center gap-2"
+          className="w-full gap-2 bg-neutral-800 hover:bg-neutral-700"
         >
           <Play />
           {isRunning ? "Executing..." : "Run & Visualize"}
-        </button>
-      </Box>
+        </Button>
+      </div>
 
       {/* ERROR */}
       {error && (
-        <Box
-          mt="sm"
-          p="sm"
-          bg="rgba(239,68,68,0.15)"
-          style={{
-            border: "1px solid #ef4444",
-            borderRadius: 6,
-          }}
+        <Alert
+          variant="destructive"
+          className="mt-2 border border-red-500/60 bg-red-500/10"
         >
-          <Text size="xs" c="red.3" fw={600}>
-            Error
-          </Text>
-          <Text size="xs" c="red.2" ff="monospace">
+          <AlertTitle className="text-xs font-semibold">Error</AlertTitle>
+          <AlertDescription className="text-xs font-mono">
             {error}
-          </Text>
-        </Box>
+          </AlertDescription>
+        </Alert>
       )}
-    </Box>
+    </div>
   );
 }
