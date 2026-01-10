@@ -11,9 +11,5 @@ export default defineConfig({
       include: [/react-remove-scroll/, /node_modules/],
     },
   },
-  resolve: {
-    alias: {
-      "react-remove-scroll": "react-remove-scroll/dist/es2015/index.js",
-    },
-  },
+  // Remove the resolve.alias section completely
 });
