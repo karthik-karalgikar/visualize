@@ -10,12 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^8.3.12",
-    "@mantine/hooks": "^8.3.12",
+    "@mantine/core": "^7.17.0",
+    "@mantine/hooks": "^7.17.0",
     "katex": "^0.16.27",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-    
+    "react-dom": "^18.3.1",
+    "react-remove-scroll": "^2.7.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
