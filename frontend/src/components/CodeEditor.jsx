@@ -1,4 +1,6 @@
+import { Box, Text, ScrollArea } from "@mantine/core";
 import { Play, AlertCircle } from "./icons";
+import { useEffect, useRef } from "react";
 
 export default function CodeEditor({
   code,
@@ -6,48 +8,153 @@ export default function CodeEditor({
   runCode,
   isRunning,
   error,
+  executionLog,
+  currentStep,
+  currentStepData,
 }) {
+  const codeLines = code.split("\n");
+  const lineRefs = useRef({});
+
+  const isExecutionMode = executionLog.length > 0;
+
+  // Auto-scroll to current line
+  useEffect(() => {
+    if (currentStepData?.lineno && lineRefs.current[currentStepData.lineno]) {
+      lineRefs.current[currentStepData.lineno].scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
+    }
+  }, [currentStepData]);
+
   return (
-    <div className="xl:col-span-1 bg-slate-800 rounded-xl shadow-2xl p-4 border border-slate-700">
-      <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg font-semibold text-white">
+    <Box h="100%" p="md" bg="dark.8" borderRadius="md">
+      {/* HEADER */}
+      <Box mb="sm">
+        <Text fw={600} c="gray.0">
           Code Editor
-        </h2>
-        <div className="text-xs text-purple-300">
-          Python 3 + NumPy
-        </div>
-      </div>
+        </Text>
+        <Text size="xs" c="gray.5">
+          Python 3 • Execution-aware
+        </Text>
+      </Box>
 
-      <textarea
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        className="w-full h-96 font-mono text-sm p-3 bg-slate-900 text-green-400 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-        placeholder="Enter your Python code here..."
-        spellCheck="false"
-      />
-
-      <button
-        onClick={runCode}
-        disabled={isRunning}
-        className="mt-3 w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-lg"
+      {/* CODE VIEW */}
+      <Box
+        h="calc(100% - 96px)"
+        bg="dark.9"
+        style={{
+          border: "1px solid #262626",
+          borderRadius: 8,
+        }}
       >
-        <Play />
-        {isRunning ? "Executing..." : "Run & Visualize"}
-      </button>
+        {isExecutionMode ? (
+          <ScrollArea h="100%" px="sm">
+            {codeLines.map((line, idx) => {
+              const lineNo = idx + 1;
 
+              const isCurrent =
+                currentStepData?.event === "line" &&
+                currentStepData.lineno === lineNo;
+
+              const isExecuted = executionLog.some(
+                (step, stepIdx) =>
+                  step.lineno === lineNo && stepIdx <= currentStep
+              );
+
+              return (
+                <Box
+                  key={idx}
+                  ref={(el) => (lineRefs.current[lineNo] = el)}
+                  px="xs"
+                  py={2}
+                  style={{
+                    backgroundColor: isCurrent
+                      ? "#facc15"
+                      : isExecuted
+                      ? "rgba(34,197,94,0.15)"
+                      : "transparent",
+                    color: isCurrent
+                      ? "#000"
+                      : isExecuted
+                      ? "#86efac"
+                      : "#6b7280",
+                    fontFamily: "monospace",
+                    fontSize: 13,
+                    borderRadius: 4,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 32,
+                      textAlign: "right",
+                      marginRight: 12,
+                      color: "#525252",
+                      userSelect: "none",
+                    }}
+                  >
+                    {lineNo}
+                  </span>
+                  {line || " "}
+                </Box>
+              );
+            })}
+          </ScrollArea>
+        ) : (
+          <textarea
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            spellCheck={false}
+            style={{
+              width: "100%",
+              height: "100%",
+              resize: "none",
+              background: "transparent",
+              border: "none",
+              outline: "none",
+              padding: 12,
+              fontFamily: "monospace",
+              fontSize: 13,
+              color: "#4ade80",
+            }}
+            placeholder="Enter your Python code here..."
+          />
+        )}
+      </Box>
+
+      {/* RUN BUTTON */}
+
+      <Box mt="sm">
+        <button
+          onClick={runCode}
+          disabled={isRunning}
+          className="w-full bg-neutral-800 hover:bg-neutral-700 text-white py-2 rounded-md flex items-center justify-center gap-2"
+        >
+          <Play />
+          {isRunning ? "Executing..." : "Run & Visualize"}
+        </button>
+      </Box>
+
+      {/* ERROR */}
       {error && (
-        <div className="mt-3 bg-red-900/50 border border-red-500 text-red-200 p-3 rounded-lg flex items-start gap-2 text-xs">
-          <AlertCircle />
-          <div>
-            <div className="font-semibold mb-1">
-              Error:
-            </div>
-            <pre className="whitespace-pre-wrap font-mono">
-              {error}
-            </pre>
-          </div>
-        </div>
+        <Box
+          mt="sm"
+          p="sm"
+          bg="rgba(239,68,68,0.15)"
+          style={{
+            border: "1px solid #ef4444",
+            borderRadius: 6,
+          }}
+        >
+          <Text size="xs" c="red.3" fw={600}>
+            Error
+          </Text>
+          <Text size="xs" c="red.2" ff="monospace">
+            {error}
+          </Text>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

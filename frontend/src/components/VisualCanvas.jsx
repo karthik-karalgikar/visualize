@@ -1,3 +1,13 @@
+import {
+  Box,
+  Text,
+  ScrollArea,
+  Paper,
+  Stack,
+  Group,
+  Badge,
+} from "@mantine/core";
+
 import ArrayVisualization from "./ArrayVisualization";
 import MatrixVisualization from "./MatrixVisualization";
 import DictVisualization from "./DictVisualization";
@@ -33,59 +43,69 @@ export default function VisualCanvas({
           : value.values;
 
         return (
-          <div>
-            <span className="font-mono text-orange-400 text-xl font-bold">
+          <Group gap="xs">
+            <Text ff="monospace" c="orange.4" fw={700} fz="xl">
               {scalarValue}
-            </span>
-            <span className="text-xs text-gray-500 ml-2">
+            </Text>
+            <Text size="xs" c="gray.6">
               torch.{value.dtype}
-            </span>
-          </div>
+            </Text>
+          </Group>
         );
       }
 
       case "tensor_1d":
         return (
-          <div>
-            <div className="text-xs text-gray-400 mb-2">
+          <Stack gap="xs">
+            <Text size="xs" c="gray.5">
               torch tensor: shape {value.shape.join("x")} | {value.dtype}
-            </div>
+            </Text>
             <ArrayVisualization arr={value.values} name={name} />
-          </div>
+          </Stack>
         );
 
       case "tensor_2d":
         return (
-          <div>
-            <div className="text-xs text-gray-400 mb-2">
+          <Stack gap="xs">
+            <Text size="xs" c="gray.5">
               torch tensor: shape {value.shape.join("x")} | {value.dtype}
-            </div>
+            </Text>
             <MatrixVisualization
               matrix={{ type: "ndarray", values: value.values }}
               name={name}
             />
-          </div>
+          </Stack>
         );
 
       case "tensor_nd":
         return (
-          <div className="space-y-2">
-            <div className="text-xs text-yellow-400 mb-2">
+          <Stack gap="xs">
+            <Text size="xs" c="yellow.4">
               torch tensor: shape {value.shape.join("x")} | {value.dtype}
-            </div>
-            <div className="bg-slate-700 p-3 rounded text-sm text-gray-300">
+            </Text>
+            <Paper p="sm" bg="dark.6">
               {value.summary ? (
                 <>
-                  <div>Size: {value.summary.size}</div>
-                  <div>Min: {value.summary.min?.toFixed(4)}</div>
-                  <div>Max: {value.summary.max?.toFixed(4)}</div>
-                  <div>Mean: {value.summary.mean?.toFixed(4)}</div>
+                  <Text size="sm" c="gray.3">
+                    Size: {value.summary.size}
+                  </Text>
+                  <Text size="sm" c="gray.3">
+                    Min: {value.summary.min?.toFixed(4)}
+                  </Text>
+                  <Text size="sm" c="gray.3">
+                    Max: {value.summary.max?.toFixed(4)}
+                  </Text>
+                  <Text size="sm" c="gray.3">
+                    Mean: {value.summary.mean?.toFixed(4)}
+                  </Text>
                 </>
               ) : (
-                <div>High-dimensional tensor</div>
+                <Text size="sm" c="gray.4">
+                  High-dimensional tensor
+                </Text>
               )}
-            </div>
-          </div>
+            </Paper>
+          </Stack>
         );
 
       case "matrix":
@@ -96,132 +116,160 @@ export default function VisualCanvas({
 
       case "string":
         return (
-          <span className="font-mono text-green-400 text-lg">
+          <Text ff="monospace" c="green.4" fz="lg">
             "{value}"
-          </span>
+          </Text>
         );
 
       case "number":
         return (
-          <span className="font-mono text-orange-400 text-xl font-bold">
+          <Text ff="monospace" c="orange.4" fw={700} fz="xl">
             {value}
-          </span>
+          </Text>
         );
 
       default:
         return (
-          <span className="font-mono text-gray-400">
+          <Text ff="monospace" c="gray.5">
             {JSON.stringify(value)}
-          </span>
+          </Text>
         );
     }
   };
 
   return (
-    <div className="xl:col-span-2 bg-slate-800 rounded-xl shadow-2xl p-4 border border-slate-700">
-      <h2 className="text-lg font-semibold text-white mb-3">
+    <Paper p="md" radius="md" bg="dark.8" withBorder h="100%">
+      <Text fw={600} c="gray.0" mb="sm">
         Visual Canvas
-      </h2>
+      </Text>
 
       {executionLog.length === 0 ? (
-        <div className="text-slate-400 text-center py-32">
-          <div className="text-6xl mb-4 opacity-50">🎨</div>
-          <p className="text-lg">
+        <Stack align="center" justify="center" h={400}>
+          <Text fz={48} opacity={0.5}>
+            🎨
+          </Text>
+          <Text c="gray.5" fz="lg">
             Run your code to see visualizations
-          </p>
-        </div>
+          </Text>
+        </Stack>
       ) : (
-        <div className="space-y-4 max-h-[500px] overflow-y-auto p-4 bg-slate-900/50 rounded-lg">
-          {/* Neural Networks */}
-          {nnModels && nnModels.length > 0 && (
-            <div className="space-y-6 mb-6">
-              <div className="text-sm font-bold text-cyan-400">
-                Detected Neural Networks
-              </div>
+        <ScrollArea h={500}>
+          <Stack gap="md" p="sm">
+            {/* Neural Networks */}
+            {nnModels && nnModels.length > 0 && (
+              <Stack gap="md">
+                <Text fw={700} size="sm" c="cyan.4">
+                  Detected Neural Networks
+                </Text>
 
-              {nnModels.map((model, idx) => (
-                <div
-                  key={idx}
-                  className="border-2 border-cyan-500 rounded-xl p-4 bg-slate-800/70"
-                >
-                  <NeuralNetworkVisualization model={model} />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Recursion Tree */}
-          {callTree &&
-            callTree.length > 1 &&
-            recursiveFuncs &&
-            recursiveFuncs.length > 0 && (
-              <RecursionTree
-                callTree={callTree}
-                currentStep={currentStep}
-                executionLog={executionLog}
-              />
+                {nnModels.map((model, idx) => (
+                  <Paper
+                    key={idx}
+                    p="md"
+                    radius="xl"
+                    withBorder
+                    style={{ borderColor: "#22d3ee" }}
+                  >
+                    <NeuralNetworkVisualization model={model} />
+                  </Paper>
+                ))}
+              </Stack>
             )}
 
-          {/* Console Output */}
-          {currentStepData?.stdout?.length > 0 && (
-            <div className="bg-slate-950 border-2 border-green-500 rounded-xl p-4 mb-4">
-              <div className="text-xs text-green-400 font-semibold mb-2">
-                Console Output
-              </div>
-              <pre className="text-sm font-mono text-green-300 whitespace-pre-wrap">
-                {currentStepData.stdout.join("\n")}
-              </pre>
-            </div>
-          )}
+            {/* Recursion Tree */}
+            {callTree &&
+              callTree.length > 1 &&
+              recursiveFuncs &&
+              recursiveFuncs.length > 0 && (
+                <RecursionTree
+                  callTree={callTree}
+                  currentStep={currentStep}
+                  executionLog={executionLog}
+                />
+              )}
 
-          {/* Formula */}
-          {currentStepData?.formula && (
-            <div className="bg-indigo-900/30 border-2 border-indigo-500 rounded-xl p-4 mb-4">
-              <div className="text-xs text-indigo-400 mb-2 font-semibold">
-                📐 Formula at Line {currentStepData.lineno}
-              </div>
-              <div className="bg-slate-900 p-4 rounded-lg">
-                {renderFormula(currentStepData.formula)}
-              </div>
-            </div>
-          )}
-
-          {/* Local Variables */}
-          {Object.keys(locals).length > 0 ? (
-            Object.entries(locals).map(([name, value]) => (
-              <div
-                key={name}
-                className={`rounded-xl p-4 border-2 transition-all ${
-                  changedVars.has(name)
-                    ? "bg-yellow-900/20 border-yellow-500 shadow-xl shadow-yellow-500/30"
-                    : "bg-slate-800/80 border-slate-600"
-                }`}
+            {/* Console Output */}
+            {currentStepData?.stdout?.length > 0 && (
+              <Paper
+                p="md"
+                radius="xl"
+                bg="dark.9"
+                withBorder
+                style={{ borderColor: "#22c55e" }}
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="font-mono text-lg font-bold text-blue-400">
-                    {name}
-                  </span>
-                  <span className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">
-                    {detectType(value)}
-                  </span>
-                  {changedVars.has(name) && (
-                    <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded-full font-bold">
-                      CHANGED
-                    </span>
-                  )}
-                </div>
-                <div className="pl-2">
+                <Text size="xs" fw={700} c="green.4" mb="xs">
+                  Console Output
+                </Text>
+                <Text
+                  ff="monospace"
+                  size="sm"
+                  c="green.3"
+                  style={{ whiteSpace: "pre-wrap" }}
+                >
+                  {currentStepData.stdout.join("\n")}
+                </Text>
+              </Paper>
+            )}
+
+            {/* Formula */}
+            {currentStepData?.formula && (
+              <Paper
+                p="md"
+                radius="xl"
+                withBorder
+                style={{ borderColor: "#6366f1" }}
+              >
+                <Text size="xs" fw={700} c="indigo.4" mb="xs">
+                  📐 Formula at Line {currentStepData.lineno}
+                </Text>
+                <Paper p="md" bg="dark.9" radius="md">
+                  {renderFormula(currentStepData.formula)}
+                </Paper>
+              </Paper>
+            )}
+
+            {/* Local Variables */}
+            {Object.keys(locals).length > 0 ? (
+              Object.entries(locals).map(([name, value]) => (
+                <Paper
+                  key={name}
+                  p="md"
+                  radius="xl"
+                  withBorder
+                  style={{
+                    borderColor: changedVars.has(name) ? "#eab308" : "#475569",
+                    backgroundColor: changedVars.has(name)
+                      ? "rgba(234,179,8,0.15)"
+                      : "rgba(30,41,59,0.8)",
+                  }}
+                >
+                  <Group gap="sm" mb="md">
+                    <Text ff="monospace" fw={700} fz="lg" c="blue.4">
+                      {name}
+                    </Text>
+
+                    <Badge color="dark" variant="filled">
+                      {detectType(value)}
+                    </Badge>
+
+                    {changedVars.has(name) && (
+                      <Badge color="yellow" variant="filled">
+                        CHANGED
+                      </Badge>
+                    )}
+                  </Group>
+
                   {renderValue(value, name)}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-slate-400 text-center py-16">
-              No variables defined yet
-            </div>
-          )}
-        </div>
+                </Paper>
+              ))
+            ) : (
+              <Text c="gray.5" ta="center" py="xl">
+                No variables defined yet
+              </Text>
+            )}
+          </Stack>
+        </ScrollArea>
       )}
-    </div>
+    </Paper>
   );
 }

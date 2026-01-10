@@ -3,12 +3,5 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
-  "devCommand": "npm run dev",
-
-  "crons": [
-    {
-      "path": "/api/keepalive",
-      "schedule": "*/25 * * * *"
-    }
-  ]
+  "devCommand": "npm run dev"
 }

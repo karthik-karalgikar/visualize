@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-
+import { Box, Flex, Text, Divider, Image, Center } from "@mantine/core";
 import CodeEditor from "./components/CodeEditor";
 import Controls from "./components/Controls";
 import VisualCanvas from "./components/VisualCanvas";
@@ -98,51 +98,98 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
-      <div className="max-w-[1800px] mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Python Execution Visualizer
-          </h1>
-        </div>
+    <Box h="100vh" w="100vw" bg="dark.9">
+      <Flex direction="column" h="100%" w="100%" maw={1800} mx="auto">
+        {/* HEADER */}
+        <Flex
+          h={56}
+          px="md"
+          align="center"
+          justify="space-between"
+          style={{ borderBottom: "1px solid #262626" }}
+        >
+          <Flex align="center" gap="sm">
+            <Image
+              src="/dhristilogo.png"
+              alt="Dhristi logo"
+              w={84}
+              h={84}
+              fit="contain"
+            />
 
-        {/* TOP: Editor + Visual Canvas */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-4">
-          <div className="xl:col-span-2">
+            <Center h={84}>
+              <Text size="md" fw={600} c="gray.0">
+                Visualise Code
+              </Text>
+            </Center>
+          </Flex>
+        </Flex>
+
+        {/* MAIN CONTENT */}
+        <Flex flex={1} gap="sm" p="sm" style={{ minHeight: 0 }}>
+          {/* CODE EDITOR */}
+          <Box
+            flex={7}
+            bg="dark.8"
+            style={{
+              border: "1px solid #262626",
+              borderRadius: 8,
+              overflow: "hidden",
+            }}
+          >
             <CodeEditor
               code={code}
               setCode={setCode}
               runCode={runCode}
               isRunning={isRunning}
               error={error}
+              executionLog={executionLog}
+              currentStep={currentStep}
+              currentStepData={currentStepData}
             />
-          </div>
+          </Box>
 
-          <VisualCanvas
-            executionLog={executionLog}
-            currentStep={currentStep}
-            currentStepData={currentStepData}
-            locals={locals}
-            changedVars={changedVars}
-            nnModels={nnModels}
-            callTree={callTree}
-            recursiveFuncs={recursiveFuncs}
-          />
-        </div>
+          {/* VISUAL CANVAS */}
+          <Box
+            flex={5}
+            bg="dark.8"
+            style={{
+              border: "1px solid #262626",
+              borderRadius: 8,
+              overflow: "hidden",
+            }}
+          >
+            <VisualCanvas
+              executionLog={executionLog}
+              currentStep={currentStep}
+              currentStepData={currentStepData}
+              locals={locals}
+              changedVars={changedVars}
+              nnModels={nnModels}
+              callTree={callTree}
+              recursiveFuncs={recursiveFuncs}
+            />
+          </Box>
+        </Flex>
 
-        {/* BOTTOM: Controls */}
-        {executionLog.length > 0 && (
-          <Controls
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-            executionLog={executionLog}
-            autoPlay={autoPlay}
-            setAutoPlay={setAutoPlay}
-            currentStepData={currentStepData}
-            codeLines={codeLines}
-          />
-        )}
-      </div>
-    </div>
+        {/* CONTROLS / TIMELINE */}
+
+        <>
+          <Divider color="dark.7" />
+          <Box h={64} px="md">
+            <Controls
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              executionLog={executionLog}
+              setExecutionLog={setExecutionLog}
+              autoPlay={autoPlay}
+              setAutoPlay={setAutoPlay}
+              currentStepData={currentStepData}
+              codeLines={codeLines}
+            />
+          </Box>
+        </>
+      </Flex>
+    </Box>
   );
 }
