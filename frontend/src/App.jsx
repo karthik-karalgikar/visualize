@@ -19,6 +19,10 @@ export default function App() {
 
   const currentStepData = executionLog[currentStep] || null;
 
+   const visibleCallTree = callTree.filter(
+    (c) => (c.step_index ?? 0) <= currentStep
+  );
+
   const locals = useMemo(() => {
     return currentStepData?.after || currentStepData?.before || {};
   }, [currentStepData]);
@@ -27,6 +31,7 @@ export default function App() {
     if (currentStep === 0 || !executionLog[currentStep - 1]) {
       return new Set();
     }
+
 
     const prev =
       executionLog[currentStep - 1]?.after ||
@@ -141,7 +146,7 @@ export default function App() {
               locals={locals}
               changedVars={changedVars}
               nnModels={nnModels}
-              callTree={callTree}
+              callTree={visibleCallTree}
               recursiveFuncs={recursiveFuncs}
             />
           </div>

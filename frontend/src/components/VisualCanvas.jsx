@@ -21,6 +21,9 @@ export default function VisualCanvas({
   recursiveFuncs,
   currentStep,
 }) {
+  // const visibleCallTree = callTree.filter(
+  //   c => (c.step_index ?? 0) <= currentStep
+  // );
   const renderValue = (value, name) => {
     const type = detectType(value);
 
@@ -168,6 +171,16 @@ export default function VisualCanvas({
                   executionLog={executionLog}
                 />
               )}
+              {/* Recursion Tree
+              {visibleCallTree.length > 1 &&
+                recursiveFuncs &&
+                recursiveFuncs.length > 0 && (
+                  <RecursionTree
+                    callTree={visibleCallTree}
+                    currentStep={currentStep}
+                    executionLog={executionLog}
+                  />
+              )} */}
 
             {/* Console Output */}
             {currentStepData?.stdout?.length > 0 && (
