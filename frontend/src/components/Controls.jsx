@@ -9,6 +9,9 @@ export default function Controls({
   autoPlay,
   setAutoPlay,
   currentStepData,
+  setSpeedIndex,
+  playSpeed,
+  setPlaySpeed,
 }) {
   return (
     <div className="flex items-center justify-between w-full h-full">
@@ -38,6 +41,37 @@ export default function Controls({
           {autoPlay ? "Pause" : "Auto Play"}
         </button>
       </div>
+
+      {/* SPEED CONTROL */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400"> Aoutoplay Speed</span>
+
+      <input
+        type="number"
+        step="any"
+        value={playSpeed}
+        disabled={autoPlay}
+        onChange={(e) => setPlaySpeed(e.target.value)}
+        className="
+          w-20
+          bg-neutral-800
+          border border-neutral-700
+          text-gray-100
+          text-xs
+          rounded-md
+          px-2 py-1
+          hover:border-neutral-500
+          focus:outline-none
+          focus:ring-1 focus:ring-blue-500
+          disabled:opacity-50
+          disabled:cursor-not-allowed
+        "
+      />
+
+
+        <span className="text-xs text-gray-400">sec</span>
+      </div>
+
 
       {/* CENTER */}
       <div className="flex items-center gap-4">

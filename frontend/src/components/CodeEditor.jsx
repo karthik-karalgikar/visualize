@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Play } from "./icons";
+import Editor from "@monaco-editor/react";
+
 
 export default function CodeEditor({
   code,
@@ -10,6 +12,7 @@ export default function CodeEditor({
   executionLog,
   currentStep,
   currentStepData,
+  language,
 }) {
   const codeLines = code.split("\n");
   const lineRefs = useRef({});
@@ -17,22 +20,60 @@ export default function CodeEditor({
   const isExecutionMode = executionLog.length > 0;
 
   // Auto-scroll to current line
-  useEffect(() => {
-    if (currentStepData?.lineno && lineRefs.current[currentStepData.lineno]) {
-      lineRefs.current[currentStepData.lineno].scrollIntoView({
-        block: "center",
-        behavior: "smooth",
-      });
-    }
-  }, [currentStepData]);
+ useEffect(() => {
+   if (!isExecutionMode) return;
+
+   if (currentStepData?.lineno && lineRefs.current[currentStepData.lineno]) {
+     lineRefs.current[currentStepData.lineno].scrollIntoView({
+       block: "center",
+       behavior: "smooth",
+     });
+   }
+ }, [currentStepData, isExecutionMode]);
+
 
   return (
     <div className="h-full rounded-md bg-neutral-800 p-4 flex flex-col">
       {/* HEADER */}
-      <div className="mb-2">
-        <div className="font-semibold text-gray-100">Code Editor</div>
-        <div className="text-xs text-gray-500">Python 3 • Execution-aware</div>
+      <div className="mb-2 flex items-center justify-between">
+        {/* Left: title */}
+        <div>
+          <div className="font-semibold text-gray-100">Code Editor</div>
+          <div className="text-xs text-gray-500">Execution-aware</div>
+        </div>
+
+        {/* Right: language selector */}
+        <div className="relative">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="
+              appearance-none
+              bg-neutral-900
+              border border-neutral-700
+              text-gray-100
+              text-sm
+              rounded-md
+              pl-3 pr-8 py-1.5
+              hover:border-neutral-500
+              focus:outline-none
+              focus:ring-1 focus:ring-blue-500
+              cursor-pointer
+            "
+          >
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="cpp">C++</option>
+            <option value="javascript">JavaScript</option>
+          </select>
+
+          {/* dropdown arrow */}
+          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+            ▼
+          </span>
+        </div>
       </div>
+
 
       {/* CODE VIEW */}
       <div className="flex-1 rounded-lg border border-neutral-700 bg-neutral-900 overflow-y-auto">
@@ -77,13 +118,20 @@ export default function CodeEditor({
             })}
           </div>
         ) : (
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            spellCheck={false}
-            className="h-full w-full resize-none bg-transparent border-none outline-none p-3 font-mono text-[13px] text-green-400"
-            placeholder="Enter your Python code here..."
-          />
+            <Editor
+              height="100%"
+              language={language}
+              theme="vs-dark"
+              value={code}
+              onChange={(value) => setCode(value ?? "")}
+              options={{
+                fontSize: 13,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+              }}
+            />
+
         )}
       </div>
 

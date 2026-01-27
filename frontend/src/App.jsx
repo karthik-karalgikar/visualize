@@ -16,6 +16,8 @@ export default function App() {
   const [nnModels, setNnModels] = useState([]);
   const [callTree, setCallTree] = useState([]);
   const [recursiveFuncs, setRecursiveFuncs] = useState([]);
+  const [language, setLanguage] = useState("python");
+
 
   const currentStepData = executionLog[currentStep] || null;
 
@@ -47,6 +49,7 @@ export default function App() {
   }, [currentStep, executionLog, locals]);
 
   const codeLines = useMemo(() => code.split("\n"), [code]);
+  const [playSpeed, setPlaySpeed] = useState(".3");
 
   useEffect(() => {
     if (!autoPlay) return;
@@ -54,12 +57,12 @@ export default function App() {
     if (currentStep < executionLog.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep((s) => s + 1);
-      }, 700);
+      }, playSpeed * 1000);
       return () => clearTimeout(timer);
     } else {
       setAutoPlay(false);
     }
-  }, [autoPlay, currentStep, executionLog.length]);
+  }, [autoPlay, currentStep, executionLog.length, playSpeed]);
 
   const runCode = async () => {
     setIsRunning(true);
@@ -129,6 +132,7 @@ export default function App() {
               executionLog={executionLog}
               currentStep={currentStep}
               currentStepData={currentStepData}
+              language={language}
             />
           </div>
 
@@ -160,6 +164,8 @@ export default function App() {
               setAutoPlay={setAutoPlay}
               currentStepData={currentStepData}
               codeLines={codeLines}
+              playSpeed={playSpeed}
+              setPlaySpeed={setPlaySpeed}
             />
           </div>
         </>
